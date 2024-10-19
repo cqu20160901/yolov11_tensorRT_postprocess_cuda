@@ -53,7 +53,7 @@ private:
     int DstOrder_[3] = {2, 1, 0 };
     Npp32f* DstPlanes_[3];
 
-    GetResultRectYolov11 Postprocess_;
+    GetResultRectYolov8 Postprocess_;
     const int NmsBeforeMaxNum_ = 512;
     int* GpuOutputCount_ = nullptr;
     DetectRect *GpuOutputRects_ = nullptr;
