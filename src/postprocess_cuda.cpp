@@ -40,18 +40,18 @@ static inline float IOU(float XMin1, float YMin1, float XMax1, float YMax1, floa
     return float(Inter) / float(Total);
 }
 
-/****** yolov8 ****/
-GetResultRectYolov8::GetResultRectYolov8()
+/****** yolov11 ****/
+GetResultRectYolov11::GetResultRectYolov11()
 {
     CoordIndex = MapSize[0][0] * MapSize[0][1] + MapSize[1][0] * MapSize[1][1] + MapSize[2][0] * MapSize[2][1];
 }
 
-GetResultRectYolov8::~GetResultRectYolov8()
+GetResultRectYolov11::~GetResultRectYolov11()
 {
 }
 
 
-int GetResultRectYolov8::GetConvDetectionResult(DetectRect *OutputRects, int *OutputCount, std::vector<float> &DetectiontRects)
+int GetResultRectYolov11::GetConvDetectionResult(DetectRect *OutputRects, int *OutputCount, std::vector<float> &DetectiontRects)
 {
     int ret = 0;
     std::vector<DetectRect> detectRects;
