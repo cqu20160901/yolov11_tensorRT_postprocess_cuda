@@ -58,7 +58,7 @@ tensorRT 测试效果
 
 ![image](https://github.com/user-attachments/assets/4522185b-9064-4489-8022-8304c61ba82d)
 
-### tensorRT 时耗（纯cpu实现后处理）
+### tensorRT 时耗（纯cpu实现后处理）[【cpu实现后处理代码分支】](https://github.com/cqu20160901/yolov11_tensorRT_postprocess_cuda/tree/yolov11_postprocess_cpu)
 ![image](https://github.com/user-attachments/assets/bbbc6777-d3e3-4349-b623-4f0f78e39910)
 
 
