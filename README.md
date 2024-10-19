@@ -2,6 +2,8 @@
 
 本示例中，包含完整的代码、模型、测试图片、测试结果。
 
+后处理用cuda实现
+
 TensorRT版本：TensorRT-8.6.1.6
 
 ## 导出onnx模型
@@ -46,34 +48,48 @@ onnx 测试效果
 
 ![image](https://github.com/user-attachments/assets/da904ce0-4e0c-414e-9339-39dca4747328)
 
-
 tensorRT 测试效果
 
 ![image](https://github.com/cqu20160901/yolov11_tensorRT_postprocess_cuda/blob/main/images/result.jpg)
 
 tensorRT 时耗
 
+示例中用cpu对图像进行预处理、用rtx4090显卡、模型yolov11n（输入分辨率640x640，80个类别）
 
+![image](https://github.com/user-attachments/assets/f3fd18e8-9f7f-4a2e-8a3e-132a47583a09)
 
 
 
 ## 替换模型说明
 
-1）按照本实例给的导出onnx方式导出对应的onnx；导出的onnx模型建议simplify后再转trt模型。
-
-2）注意修改后处理相关 postprocess.hpp 中相关的参数（类别、输入分辨率等）。
-
 修改相关的路径
 ```cpp
-    std::string OnnxFile = "/zhangqian/workspaces1/TensorRT/yolov8_trt_Cplusplus/models/yolov8n_ZQ.onnx";
-    std::string SaveTrtFilePath = "/zhangqian/workspaces1/TensorRT/yolov8_trt_Cplusplus/models/yolov8n_ZQ.trt";
-    cv::Mat SrcImage = cv::imread("/zhangqian/workspaces1/TensorRT/yolov8_trt_Cplusplus/images/test.jpg");
+
+int main()
+{
+    std::string OnnxFile = "/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/models/yolov11n.onnx";
+    std::string SaveTrtFilePath = "/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/models/yolov11n.trt";
+    cv::Mat SrcImage = cv::imread("/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/images/test.jpg");
 
     int img_width = SrcImage.cols;
     int img_height = SrcImage.rows;
+    std::cout << "img_width: " << img_width << " img_height: " << img_height << std::endl;
 
     CNN YOLO(OnnxFile, SaveTrtFilePath, 1, 3, 640, 640);
-    YOLO.Inference(SrcImage);
+    
+    auto t_start = std::chrono::high_resolution_clock::now();
+    int Temp = 2000;
+    
+    int SleepTimes = 0;
+    for (int i = 0; i < Temp; i++)
+    {
+        YOLO.Inference(SrcImage);
+        std::this_thread::sleep_for(std::chrono::milliseconds(SleepTimes));
+    }
+    auto t_end = std::chrono::high_resolution_clock::now();
+    float total_inf = std::chrono::duration<float, std::milli>(t_end - t_start).count();
+    std::cout << "Info: " << Temp << " times infer and postprocess ave cost: " << total_inf / float(Temp) - SleepTimes << " ms." << std::endl;
+
 
     for (int i = 0; i < YOLO.DetectiontRects_.size(); i += 6)
     {
@@ -90,31 +106,11 @@ tensorRT 时耗
         putText(SrcImage, text1, cv::Point(xmin, ymin + 15), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
     }
 
-    imwrite("/zhangqian/workspaces1/TensorRT/yolov8_trt_Cplusplus/images/result.jpg", SrcImage);
+    imwrite("/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/images/result.jpg", SrcImage);
 
     printf("== obj: %d \n", int(float(YOLO.DetectiontRects_.size()) / 6.0));
 
+    return 0;
+}
+
 ```
-
-## 特别说明
-
-本示例只是用来测试流程，模型效果并不保证，且代码整理的布局合理性没有做过多的考虑。
-
-## 相关链接
-
-[yolov8 瑞芯微 RKNN 的 C++部署](https://github.com/cqu20160901/yolov8n_onnx_tensorRT_rknn_horizon)
-
-[yolov8 瑞芯微RKNN和地平线Horizon芯片仿真测试部署-2023年11月15日版本](https://blog.csdn.net/zhangqian_1/article/details/134438275)
-
-[yolov8 瑞芯微RKNN和地平线Horizon芯片仿真测试部署](https://blog.csdn.net/zhangqian_1/article/details/128918268)
-
-
-## 2024-10-06
-
-### 1）预处理优化
-
-原来为：用 opencv 进行预处理(resize-转rgb-转float-减均值除方差) 
-
-修改为：用 cuda 提供的 nppi 库进行预处理(resize-转rgb-转float-减均值除方差)
-
-    优化效果：10FPS情况下 CPU 占用减少 62%
