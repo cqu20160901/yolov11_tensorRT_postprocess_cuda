@@ -1,0 +1,2 @@
+# yolov11_tensorRT_postprocess_cuda
+yolov11 的tensorRT部署，后处理使用cuda进行。
