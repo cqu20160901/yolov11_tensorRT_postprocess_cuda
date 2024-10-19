@@ -2,13 +2,13 @@
 
 本示例中，包含完整的代码、模型、测试图片、测试结果。
 
-后处理用cuda实现
+后处理部分用cuda 核函数实现，并不是全部后处理都用cuda实现。
 
 TensorRT版本：TensorRT-8.6.1.6
 
 ## 导出onnx模型
 
-按照yolov11官方到处的方式
+按照yolov11官方导出的方式如下：
 
 ```python
 from ultralytics import YOLO
@@ -54,7 +54,7 @@ tensorRT 测试效果
 
 tensorRT 时耗
 
-示例中用cpu对图像进行预处理、用rtx4090显卡、模型yolov11n（输入分辨率640x640，80个类别）
+示例中用cpu对图像进行预处理、用rtx4090显卡、模型yolov11n（输入分辨率640x640，80个类别）、量化成FP16模型
 
 ![image](https://github.com/user-attachments/assets/f3fd18e8-9f7f-4a2e-8a3e-132a47583a09)
 
