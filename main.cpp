@@ -5,13 +5,12 @@
 
 int main()
 {
-    std::string OnnxFile = "/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/models/yolov11n.onnx";
-    std::string SaveTrtFilePath = "/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/models/yolov11n.trt";
-    cv::Mat SrcImage = cv::imread("/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/images/test.jpg");
+    std::string OnnxFile = "/root/autodl-tmp/yolov11_tensorRT_Cplusplus/models/yolov11n.onnx";
+    std::string SaveTrtFilePath = "/root/autodl-tmp/yolov11_tensorRT_Cplusplus/models/yolov11n.trt";
+    cv::Mat SrcImage = cv::imread("/root/autodl-tmp/yolov11_tensorRT_Cplusplus/images/test.jpg");
 
     int img_width = SrcImage.cols;
     int img_height = SrcImage.rows;
-    std::cout << "img_width: " << img_width << " img_height: " << img_height << std::endl;
 
     CNN YOLO(OnnxFile, SaveTrtFilePath, 1, 3, 640, 640);
     
@@ -26,7 +25,8 @@ int main()
     }
     auto t_end = std::chrono::high_resolution_clock::now();
     float total_inf = std::chrono::duration<float, std::milli>(t_end - t_start).count();
-    std::cout << "Info: " << Temp << " times infer and postprocess ave cost: " << total_inf / float(Temp) - SleepTimes << " ms." << std::endl;
+    std::cout << "Info: " << Temp << " times infer cpu postprocess ave cost: " << total_inf / float(Temp) - SleepTimes << " ms." << std::endl;
+
 
 
     for (int i = 0; i < YOLO.DetectiontRects_.size(); i += 6)
@@ -44,7 +44,7 @@ int main()
         putText(SrcImage, text1, cv::Point(xmin, ymin + 15), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
     }
 
-    imwrite("/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/images/result.jpg", SrcImage);
+    imwrite("/root/autodl-tmp/yolov11_tensorRT_Cplusplus/images/result.jpg", SrcImage);
 
     printf("== obj: %d \n", int(float(YOLO.DetectiontRects_.size()) / 6.0));
 

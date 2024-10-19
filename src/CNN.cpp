@@ -2,7 +2,6 @@
 #include "common/common.hpp"
 #include <algorithm>
 #include <chrono>
-#include "kernels/get_nms_before_boxes.cuh"
 
 
 CNN::CNN(const std::string &OnnxFilePath, const std::string &SaveTrtFilePath, int BatchSize, int InputChannel, int InputImageWidth, int InputImageHeight)
@@ -26,6 +25,10 @@ CNN::~CNN()
     for (int i = 0; i < BuffersDataSize_.size(); i ++)
     {
         cudaFree(Buffers_[i]);
+        if (i >= 1)
+        {
+            delete OutputData_[i];
+        }
     }
 
     // destroy the engine
@@ -59,20 +62,6 @@ CNN::~CNN()
         cudaFree(GpuDataPlanes_);
     }
 
-    if (nullptr != GpuOutputCount_)
-    {
-        cudaFree(GpuOutputCount_);
-    }
-
-    if (nullptr != CpuOutputCount_)
-    {
-        free(CpuOutputCount_);
-    }
-    if (nullptr != CpuOutputRects_)
-    {
-        free(CpuOutputRects_);
-    }
-
 }
 
 void CNN::ModelInit()
@@ -101,13 +90,19 @@ void CNN::ModelInit()
     int64_t TotalSize = 0;
     int nbBindings = PtrEngine_->getNbBindings();
     BuffersDataSize_.resize(nbBindings);
+    OutputData_.resize(nbBindings - 1);
     for (int i = 0; i < nbBindings; ++ i)
     {
         nvinfer1::Dims dims = PtrEngine_->getBindingDimensions(i);
         nvinfer1::DataType dtype = PtrEngine_->getBindingDataType(i);
         TotalSize = Volume(dims) * 1 * GetElementSize(dtype);
+
         BuffersDataSize_[i] = TotalSize;
         cudaMalloc(&Buffers_[i], TotalSize);
+        if (i >= 1)
+        {
+            OutputData_[i - 1] = new float[int(TotalSize / sizeof(float))];
+        }
 
         if (0 == i)
         {
@@ -124,12 +119,6 @@ void CNN::ModelInit()
         }
     }
 
-    cudaMalloc(&GpuOutputCount_, sizeof(int));
-    cudaMalloc(&GpuOutputRects_, sizeof(DetectRect) * NmsBeforeMaxNum_);
-
-    CpuOutputCount_ = (int *)malloc(sizeof(int));
-    CpuOutputRects_ = (DetectRect *)malloc(sizeof(DetectRect) * NmsBeforeMaxNum_);
-    
     PreprocessResult_.resize(BatchSize_ * InputImageWidth_ * InputImageHeight_ * InputChannel_);
 }
 
@@ -148,39 +137,39 @@ void CNN::Inference(cv::Mat &SrcImage)
 
     PtrContext_->enqueueV2(Buffers_, Stream_, nullptr);
 
-    cudaMemsetAsync(GpuOutputCount_, 0, 4, Stream_);
-    GetNmsBeforeBoxes((float*)Buffers_[1], Postprocess_.CoordIndex, Postprocess_.ClassNum, Postprocess_.ObjectThresh, NmsBeforeMaxNum_, 
-                     GpuOutputRects_, GpuOutputCount_, Stream_);
+    for (int i = 1; i < BuffersDataSize_.size(); i++)
+    {
+        cudaMemcpyAsync(OutputData_[i - 1], Buffers_[i], BuffersDataSize_[i], cudaMemcpyDeviceToHost, Stream_);
+    }
 
-    cudaMemcpyAsync(CpuOutputCount_, GpuOutputCount_, sizeof(int), cudaMemcpyDeviceToHost, Stream_);
-    cudaMemcpyAsync(CpuOutputRects_, GpuOutputRects_, sizeof(DetectRect) * NmsBeforeMaxNum_, cudaMemcpyDeviceToHost, Stream_);
-    
     cudaStreamSynchronize(Stream_);
-
+    
     // Postprocess
-    int ret = Postprocess_.GetConvDetectionResult(CpuOutputRects_, CpuOutputCount_, DetectiontRects_);
+    static GetResultRectYolov11 Postprocess;
+    int ret = Postprocess.GetConvDetectionResult(OutputData_, DetectiontRects_);
 }
 
 void CNN::PrepareImage(cv::Mat &SrcImage, std::vector<float> &PreprocessResult)
 {
     float *Imagedata = PreprocessResult.data();
-    
+
     cv::Mat rsz_img;
     cv::resize(SrcImage, rsz_img, cv::Size(InputImageWidth_, InputImageHeight_));
     rsz_img.convertTo(rsz_img, CV_32FC3, 1.0 / 255);
-    
+
     // HWC TO CHW
     int channelLength = InputImageWidth_ * InputImageHeight_;
     std::vector<cv::Mat> split_img = {cv::Mat(InputImageHeight_, InputImageWidth_, CV_32FC1, Imagedata + channelLength * 2),
                                       cv::Mat(InputImageHeight_, InputImageWidth_, CV_32FC1, Imagedata + channelLength * 1),
                                       cv::Mat(InputImageHeight_, InputImageWidth_, CV_32FC1, Imagedata + channelLength * 0)};
+
     cv::split(rsz_img, split_img);
 }
 
 
 void CNN::PrepareImage(cv::Mat &SrcImage, void *InputBuffer)
 {
-    #if 0
+#if 0
     int src_width = SrcImage.cols;
     int src_height = SrcImage.rows;
     int src_channel = SrcImage.channels();
@@ -224,5 +213,5 @@ void CNN::PrepareImage(cv::Mat &SrcImage, void *InputBuffer)
     nppiCopy_32f_C3P3R(GpuImgF32Buf_, InputImageWidth_ * src_channel * sizeof(float), DstPlanes_, InputImageWidth_ * sizeof(float), dstSize);
  
     cudaMemcpyAsync(InputBuffer, GpuDataPlanes_, src_channel * InputImageWidth_ * InputImageHeight_ * sizeof(float), cudaMemcpyDeviceToDevice, Stream_);
-    #endif
+#endif
 }
