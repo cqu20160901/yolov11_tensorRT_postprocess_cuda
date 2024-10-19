@@ -2,7 +2,7 @@
 
 本示例中，包含完整的代码、模型、测试图片、测试结果。
 
-后处理部分用cuda 核函数实现，并不是全部后处理都用cuda实现。
+后处理部分用cuda 核函数实现，并不是全部后处理都用cuda实现；纯cpu实现后处理部分代码分支[【cpu实现后处理代码分支】](https://github.com/cqu20160901/yolov11_tensorRT_postprocess_cuda/tree/yolov11_postprocess_cpu)
 
 TensorRT版本：TensorRT-8.6.1.6
 
@@ -52,11 +52,14 @@ tensorRT 测试效果
 
 ![image](https://github.com/cqu20160901/yolov11_tensorRT_postprocess_cuda/blob/main/images/result.jpg)
 
-tensorRT 时耗
+### tensorRT 时耗（cuda实现部分后处理）
 
 示例中用cpu对图像进行预处理、用rtx4090显卡、模型yolov11n（输入分辨率640x640，80个类别）、量化成FP16模型
 
-![image](https://github.com/user-attachments/assets/f3fd18e8-9f7f-4a2e-8a3e-132a47583a09)
+![image](https://github.com/user-attachments/assets/4522185b-9064-4489-8022-8304c61ba82d)
+
+### tensorRT 时耗（纯cpu实现后处理）
+![image](https://github.com/user-attachments/assets/bbbc6777-d3e3-4349-b623-4f0f78e39910)
 
 
 
