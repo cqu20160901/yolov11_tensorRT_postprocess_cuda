@@ -2,7 +2,7 @@
 
 本示例中，包含完整的代码、模型、测试图片、测试结果。
 
-后处理部分用cuda 核函数实现，并不是全部后处理都用cuda实现。
+后处理部分用cuda 核函数实现，并不是全部后处理都用cuda实现；cpu实现后处理部分[【参考链接】](https://github.com/cqu20160901/yolov11_tensorRT_postprocess_cuda/tree/yolov11_postprocess_cpu)
 
 TensorRT版本：TensorRT-8.6.1.6
 
