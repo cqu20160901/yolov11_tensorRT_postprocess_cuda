@@ -11,13 +11,13 @@ typedef signed char int8_t;
 typedef unsigned int uint32_t;
 
 
-// yolov8
-class GetResultRectYolov8
+// yolov11
+class GetResultRectYolov11
 {
 public:
-    GetResultRectYolov8();
+    GetResultRectYolov11();
 
-    ~GetResultRectYolov8();
+    ~GetResultRectYolov11();
 
     int GetConvDetectionResult(DetectRect *OutputRects, int *OutputCount, std::vector<float> &DetectiontRects);
 
