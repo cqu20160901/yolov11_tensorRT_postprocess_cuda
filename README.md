@@ -1,22 +1,31 @@
-# yolov8 tensorRT 的 C++ 部署
+# yolov11 tensorRT 的 C++ 部署，后处理用cuda实现的
 
 本示例中，包含完整的代码、模型、测试图片、测试结果。
 
-TensorRT版本：TensorRT-7.1.3.4
+TensorRT版本：TensorRT-8.6.1.6
 
 ## 导出onnx模型
 
-导出适配本实例的onnx模型参考[【yolov8 导出onnx-2023年11月15日版本】](https://blog.csdn.net/zhangqian_1/article/details/134438275)。
+按照yolov11官方到处的方式
 
+```python
+from ultralytics import YOLO
+model = YOLO(model='yolov11n.pt')  # load a pretrained model (recommended for training)
+results = model(task='detect', source=r'./bus.jpg', save=True)  # predict on an image
+
+model.export(format="onnx", imgsz=640, simplify=True)
+
+```
 
 ## 编译
 
 修改 CMakeLists.txt 对应的TensorRT位置
 
-![17012439652981](https://github.com/cqu20160901/yolov8_tensorRT_Cplusplus/assets/22290931/68586322-556a-42ef-8444-1064b42c86f9)
+![image](https://github.com/user-attachments/assets/ac92b3d7-855a-40ac-9b5f-a3fabd262634)
+
 
 ```powershell
-cd yolov8_tensorRT_Cplusplus
+cd yolov11_tensorRT_postprocess_cuda
 mkdir build
 cd build
 cmake ..
@@ -35,15 +44,16 @@ cd build
 
 onnx 测试效果
 
-![image](https://github.com/cqu20160901/yolov8_tensorRT_Cplusplus/assets/22290931/8574c0ce-fc56-4b3c-9c7e-ec31e29b01ed)
+![image](https://github.com/user-attachments/assets/da904ce0-4e0c-414e-9339-39dca4747328)
+
 
 tensorRT 测试效果
 
-![result](https://github.com/cqu20160901/yolov8_tensorRT_Cplusplus/assets/22290931/29a8115d-a5ce-4c58-9b1a-c48766cdfcd5)
+![image](https://github.com/cqu20160901/yolov11_tensorRT_postprocess_cuda/blob/main/images/result.jpg)
 
 tensorRT 时耗
 
-![image](https://github.com/user-attachments/assets/6490069e-4d8a-48f3-88e7-58eb70ae3abe)
+
 
 
 
