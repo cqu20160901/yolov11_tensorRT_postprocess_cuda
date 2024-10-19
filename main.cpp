@@ -26,7 +26,7 @@ int main()
     }
     auto t_end = std::chrono::high_resolution_clock::now();
     float total_inf = std::chrono::duration<float, std::milli>(t_end - t_start).count();
-    std::cout << "Info: " << Temp << " times ave cost: " << total_inf / float(Temp) - SleepTimes << " ms." << std::endl;
+    std::cout << "Info: " << Temp << " times infer and postprocess ave cost: " << total_inf / float(Temp) - SleepTimes << " ms." << std::endl;
 
 
     for (int i = 0; i < YOLO.DetectiontRects_.size(); i += 6)
