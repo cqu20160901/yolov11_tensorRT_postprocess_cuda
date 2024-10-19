@@ -49,6 +49,7 @@ SET(CMAKE_PREFIX_PATH "/usr/local/cuda")
 
 add_executable(yolo_trt main.cpp src/CNN.cpp src/postprocess_cuda.cpp src/kernels/get_nms_before_boxes.cu)
 
+# 使用 gpu 进行预处理 打开这一行，关闭 后后 面一行 
 # target_link_libraries(yolo_trt ${OpenCV_LIBRARIES} ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY} ${CUDA_npp_LIBRARY} ${CUDA_cublas_LIBRARY})  
-# PRIVATE ${CUDA_NPP_LIBRARY}
+
 target_link_libraries(yolo_trt ${OpenCV_LIBRARIES} ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY})
