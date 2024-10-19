@@ -117,3 +117,27 @@ int main()
 }
 
 ```
+
+
+## 预处理加速
+
+如果环境支持CUDA_npp_LIBRARY进行预处理（如果有环境可以打开进一步加速（修改位置：CMakelist.txt、用CPU或GPU预处理打开对应的宏 #define USE_GPU_PREPROCESS 1）)
+
+**重新搭建了一个支持用gpu做处理操作：rtx4090显卡、模型yolov11n（输入分辨率640x640，80个类别）、量化成FP16模型**
+
+cpu做预处理+cpu做后处理
+
+![image](https://github.com/user-attachments/assets/e3d44672-38cf-47f7-84e3-9436dc0e6c0c)
+
+
+cpu做预处理+gpu做后处理
+
+![image](https://github.com/user-attachments/assets/482bb1cc-3454-454a-ae2e-362c59cb9eaa)
+
+gpu做预处理+gpu做后处理
+
+![image](https://github.com/user-attachments/assets/a05a3fab-35d0-45ff-bbf3-e292093bb725)
+
+
+## 后续优化点
+1、把nms过程也用cuda实现，参加nms的框不多，但也是一个优化点，期待更新中
