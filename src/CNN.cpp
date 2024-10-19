@@ -4,7 +4,7 @@
 #include <chrono>
 #include "kernels/get_nms_before_boxes.cuh"
 
-#define USE_GPU_PREPROCESS 1
+#define USE_GPU_PREPROCESS 0
 
 CNN::CNN(const std::string &OnnxFilePath, const std::string &SaveTrtFilePath, int BatchSize, int InputChannel, int InputImageWidth, int InputImageHeight)
 {
