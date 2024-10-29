@@ -27,7 +27,7 @@ CNN::~CNN()
         cudaFree(Buffers_[i]);
         if (i >= 1)
         {
-            delete OutputData_[i];
+            delete OutputData_[i-1];
         }
     }
 
