@@ -5,9 +5,9 @@
 
 int main()
 {
-    std::string OnnxFile = "/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/models/yolov11n.onnx";
-    std::string SaveTrtFilePath = "/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/models/yolov11n.trt";
-    cv::Mat SrcImage = cv::imread("/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/images/test.jpg");
+    std::string OnnxFile = "/root/autodl-tmp/zhangqian/yolov11_tensorRT_postprocess_cuda/models/yolov11n.onnx";
+    std::string SaveTrtFilePath = "/root/autodl-tmp/zhangqian/yolov11_tensorRT_postprocess_cuda/models/yolov11n.trt";
+    cv::Mat SrcImage = cv::imread("/root/autodl-tmp/zhangqian/yolov11_tensorRT_postprocess_cuda/images/test.jpg");
 
     int img_width = SrcImage.cols;
     int img_height = SrcImage.rows;
@@ -44,7 +44,7 @@ int main()
         putText(SrcImage, text1, cv::Point(xmin, ymin + 15), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
     }
 
-    imwrite("/root/autodl-tmp/yolov11_tensorRT_postprocess_cuda/images/result.jpg", SrcImage);
+    imwrite("/root/autodl-tmp/zhangqian/yolov11_tensorRT_postprocess_cuda/images/result.jpg", SrcImage);
 
     printf("== obj: %d \n", int(float(YOLO.DetectiontRects_.size()) / 6.0));
 

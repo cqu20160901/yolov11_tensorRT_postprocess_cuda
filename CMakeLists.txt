@@ -10,10 +10,8 @@ find_package(CUDA REQUIRED)
 message(STATUS "Find CUDA include at ${CUDA_INCLUDE_DIRS}")
 message(STATUS "Find CUDA libraries: ${CUDA_LIBRARIES}")
 
-# find_library(CUDA_NPP_LIBRARY NAMES npp PATHS ${CUDA_TOOLKIT_ROOT_DIR}/lib64)
-
 # TensorRT
-set(TENSORRT_ROOT /root/autodl-tmp/TensorRT-8.6.1.6)
+set(TENSORRT_ROOT /zhangqian/code/autodl-tmp/TensorRT-8.6.1.6)
 
 find_path(TENSORRT_INCLUDE_DIR NvInfer.h
         HINTS ${TENSORRT_ROOT} PATH_SUFFIXES include/)
@@ -47,9 +45,9 @@ enable_language(CUDA)
 
 SET(CMAKE_PREFIX_PATH "/usr/local/cuda")
 
-add_executable(yolo_trt main.cpp src/CNN.cpp src/postprocess_cuda.cpp src/kernels/get_nms_before_boxes.cu)
-
-# 使用 gpu 进行预处理 打开这一行，关闭 后后 面一行 
-# target_link_libraries(yolo_trt ${OpenCV_LIBRARIES} ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY} ${CUDA_npp_LIBRARY} ${CUDA_cublas_LIBRARY})  
+add_executable(yolo_trt main.cpp src/CNN.cpp src/postprocess_cuda.cpp src/kernels/get_nms_before_boxes.cu src/kernels/image_preprocess.cu)
 
 target_link_libraries(yolo_trt ${OpenCV_LIBRARIES} ${CUDA_LIBRARIES} ${TENSORRT_LIBRARY})
+
+
+# export LD_LIBRARY_PATH=/zhangqian/code/autodl-tmp/TensorRT-8.6.1.6/lib:$LD_LIBRARY_PATH

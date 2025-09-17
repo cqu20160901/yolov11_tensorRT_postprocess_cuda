@@ -66,7 +66,6 @@ void GetNmsBeforeBoxes(float *SrcInput, int AnchorCount, int ClassNum, float Obj
     int Grid = (AnchorCount + Block - 1) / Block;
 
     GetNmsBeforeBoxesKernel<<<Grid, Block, 0, Stream>>>(SrcInput, AnchorCount, ClassNum, ObjectThresh, NmsBeforeMaxNum, OutputRects, OutputCount);
-    return;
 }
 
 
