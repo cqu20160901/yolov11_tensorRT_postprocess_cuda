@@ -134,7 +134,7 @@ cpu做预处理+gpu做后处理
 
 ![image](https://github.com/user-attachments/assets/482bb1cc-3454-454a-ae2e-362c59cb9eaa)
 
-gpu做预处理+gpu做后处理
+gpu做预处理（用核函数实现）+gpu做后处理
 
 ![image](https://github.com/user-attachments/assets/a05a3fab-35d0-45ff-bbf3-e292093bb725)
 
